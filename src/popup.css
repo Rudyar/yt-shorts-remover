@@ -1,0 +1,13 @@
+.container {
+  width: 200px;
+  height: 100px;
+  background: white;
+}
+
+h1 {
+  margin: 10px;
+}
+
+.border {
+  border: 1px solid red;
+}
