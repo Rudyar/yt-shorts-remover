@@ -5,9 +5,6 @@
   "description": "Remove short from Yt desktop",
   "permissions": ["storage", "tabs"],
   "host_permissions": ["*://*.youtube.com/*"],
-  "background": {
-    "service_worker": "background.js"
-  },
   "content_scripts": [
     {
       "matches": ["*://*.youtube.com/*"],
