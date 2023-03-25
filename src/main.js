@@ -1,21 +1,23 @@
 let uri = location.href;
+let obs = null;
+
+function applyDisplayNone(nodes) {
+  nodes.map((e) => (e.style.display = "none"));
+}
 
 function delShortsSideBar() {
-  let shortsIcon = document.querySelectorAll("#endpoint[title='Shorts'");
+  let elems = document.querySelectorAll("#endpoint[title='Shorts'");
 
-  if (shortsIcon.length == 0) {
+  if (elems.length == 0) {
     setTimeout(() => {
       delShortsSideBar();
     }, 500);
   }
-
-  shortsIcon.forEach((e) => {
-    e.style.display = "none";
-  });
+  applyDisplayNone([...elems]);
 }
 
 function delShortsSub() {
-  let elems = document.querySelectorAll(
+  const elems = document.querySelectorAll(
     "ytd-grid-video-renderer, ytd-video-renderer"
   );
 
@@ -25,15 +27,15 @@ function delShortsSub() {
     }, 500);
   }
 
-  elems.forEach((e) => {
-    if (e.querySelector("a").href.includes("/shorts/")) {
-      e.style.display = "none";
-    }
-  });
+  const elemsToDel = [...elems].filter((e) =>
+    e.querySelector("a").href.includes("/shorts/")
+  );
+
+  applyDisplayNone(elemsToDel);
 }
 
 function delShortsHome() {
-  let elems = document.querySelectorAll(".ytd-rich-shelf-renderer");
+  const elems = document.querySelectorAll(".ytd-rich-shelf-renderer");
 
   if (elems.length == 0) {
     setTimeout(() => {
@@ -41,11 +43,11 @@ function delShortsHome() {
     }, 500);
   }
 
-  elems.forEach((e) => {
-    if (e.querySelector("h2")?.textContent.includes("Shorts")) {
-      e.style.display = "none";
-    }
-  });
+  const elemsToDel = [...elems].filter((e) =>
+    e.querySelector("h2")?.textContent.includes("Shorts")
+  );
+
+  applyDisplayNone(elemsToDel);
 }
 
 function delShortsSearch() {
@@ -58,15 +60,12 @@ function delShortsSearch() {
     }, 500);
   }
 
-  shelf.forEach((e) => {
-    e.style.display = "none";
-  });
+  const shortsToDel = [...shorts].filter((e) =>
+    e.querySelector("a").href.includes("/shorts/")
+  );
 
-  shorts.forEach((e) => {
-    if (e.querySelector("a").href.includes("/shorts/")) {
-      e.style.display = "none";
-    }
-  });
+  applyDisplayNone([...shelf]);
+  applyDisplayNone(shortsToDel);
 }
 
 function dispatch() {
@@ -86,7 +85,7 @@ function waitDOMElem() {
   if (body != null) {
     dispatch();
     delShortsSideBar();
-    let obs = new MutationObserver(dispatch);
+    obs = new MutationObserver(dispatch);
     obs.observe(body, { subtree: true, childList: true });
   } else {
     setTimeout(() => {
@@ -97,6 +96,10 @@ function waitDOMElem() {
 
 window.addEventListener("load", () => {
   waitDOMElem();
+});
+
+window.addEventListener("beforeunload", (e) => {
+  if (obs) obs.disconnect();
 });
 
 // function logConsole(str) {
